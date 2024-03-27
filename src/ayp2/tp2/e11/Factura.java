@@ -1,63 +1,74 @@
 package ayp2.tp2.e11;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.Arrays;
 
-interface PorPagar {
-    double obtenerPago();
-}
+//Clase Factura que implementa la interfaz PorPagar.
+public class Factura implements PorPagar {
 
-class Item {
-    private String descripcion;
-    private double precioUnitario;
-    private int cantidad;
+	// Atributos de la clase Factura
+	private static final int CANTIDAD_ITEMS = 10;
+	private String proveedor;
+	private int numero;
+	private String fecha;
 
-    public Item(String descripcion, double precioUnitario, int cantidad) {
-        this.descripcion = descripcion;
-        this.precioUnitario = precioUnitario;
-        this.cantidad = cantidad;
-    }
+	private int cantArticulos = 0;
+	private Item[] articulos;
 
-    public double calcularTotal() {
-        return precioUnitario * cantidad;
-    }
-}
+	// Constructor
+	public Factura(String proveedor, int numero, String fecha) {
+		this.proveedor = proveedor;
+		this.numero = numero;
+		this.fecha = fecha;
+		articulos = new Item[CANTIDAD_ITEMS];
+	}
 
-class Factura implements PorPagar {
-    private String nombreProveedor;
-    private String numeroFactura;
-    private Date fechaCompra;
-    private List<Item> items;
+	// Metodo implementado por la interfaz
+	// Calcula el total de la factura
+	public double obtenerPago() {
+		double total = 0.0;
+		// Recorre el array y antes de acumular el total
+		// verifica que exista una instancia de Item en esa posición
+		for(int x = 0; x < articulos.length; x++) {
+			if(articulos[x] != null) {				
+				total += articulos[x].cantidad * articulos[x].precioUnitario;
+			}
+		}
+		return total;
+	}
 
-    public Factura(String nombreProveedor, String numeroFactura, Date fechaCompra, List<Item> items) {
-        this.nombreProveedor = nombreProveedor;
-        this.numeroFactura = numeroFactura;
-        this.fechaCompra = fechaCompra;
-        this.items = items;
-    }
+	// Metodo para agregar un articulo al arreglo de tipo Item
+	public void agregarItem(String descripcion, int cantidad, double precioUnitario) throws IndexOutOfBoundsException {
+		if (cantArticulos > CANTIDAD_ITEMS)
+			throw new IndexOutOfBoundsException("Factura completa");
 
-    @Override
-    public double obtenerPago() {
-        double total = 0;
-        for (Item item : items) {
-            total += item.calcularTotal();
-        }
-        return total;
-    }
-}
+		this.articulos[cantArticulos++] = new Item(descripcion, cantidad, precioUnitario);
+	}
 
-class Empleado implements PorPagar {
-    private String nombre;
-    private double salario;
+	@Override
+	public String toString() {
+		return "Factura [proveedor=" + proveedor + ", numero=" + numero + ", fecha=" + fecha + ", cantArticulos="
+				+ cantArticulos + ", articulos=" + Arrays.toString(articulos) + "]";
+	}
 
-    public Empleado(String nombre, double salario) {
-        this.nombre = nombre;
-        this.salario = salario;
-    }
+	// Clase Item
+	private class Item {
 
-    @Override
-    public double obtenerPago() {
-        return salario;
-    }
+		private String descripcion;
+		private int cantidad;
+		private double precioUnitario;
+
+		public Item(String descripcion, int cantidad, double precioUnitario) {
+			this.descripcion = descripcion;
+			this.cantidad = cantidad;
+			this.precioUnitario = precioUnitario;
+		}
+
+		@Override
+		public String toString() {
+			return "Item [descripcion=" + descripcion + ", cantidad=" + cantidad + ", precioUnitario=" + precioUnitario
+					+ "]";
+		}
+
+	}
+
 }
